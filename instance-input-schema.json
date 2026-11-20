@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "description": "Parameters to instantiate an Optical Inspection OPCUA sensor",
+  "type": "object",
+  "configuration": {
+    "ipv4": {
+      "description": "The IPv4 address on which the OPC UA server runs.",
+      "type": "string",
+      "default": "0.0.0.0"
+    },
+    "port": {
+      "description": "The port on which the OPC UA server runs.",
+      "type": "int",
+      "default": "4840"
+    },
+    "camera": {
+      "description": "The index of the camera USB device represented as /dev/videoX.",
+      "type": "string",
+      "default": ""
+    },
+    "headless": {
+      "description": "Run in a headless (without X serer and display mode).",
+      "type": "int",
+      "default": "1"
+    },
+    "mode": {
+      "description": "Mode of operation. The default is to read data from camera device (default=0). If set to 1 then read data from network.",
+      "type": "int",
+      "default": "0"
+    },
+    "frame_width": {
+      "description": "The desired for capture frame width.",
+      "type": "int",
+      "default": "320"
+    },
+    "frame_height": {
+      "description": "The desired for capture frame height.",
+      "type": "int",
+      "default": "200"
+    },
+    "sensor": {
+      "description": "Sensor class to use.",
+      "type": "string",
+      "default": "OpticalShapeInspectionSensor"
+    },
+    "video_stream_port": {
+      "description": "The port on which oi-sensor-client can send video stream to us.",
+      "type": "int",
+      "default": "8485"
+    },
+    "stable_frames": {
+      "description": "Number of consecutive frames a shape must be detected before it is published over OPC UA (1 disables debouncing).",
+      "type": "int",
+      "default": "1"
+    }
+  }
+}

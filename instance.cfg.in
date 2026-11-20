@@ -1,0 +1,59 @@
+[buildout]
+parts =
+  promises
+  directory
+  oi-sensor-service
+
+eggs-directory = {{ buildout["eggs-directory"] }}
+develop-eggs-directory = {{ buildout["develop-eggs-directory"] }}
+offline = true
+
+[check-port-listening-promise]
+recipe = slapos.cookbook:check_port_listening
+path = ${directory:promise}/${:_buildout_section_name_}
+
+[directory]
+recipe = slapos.cookbook:mkdirectory
+home = ${buildout:directory}
+etc = ${:home}/etc
+var = ${:home}/var
+script = ${:etc}/run/
+service = ${:etc}/service
+promise = ${:etc}/promise/
+log = ${:var}/log
+bin = ${:home}/bin
+
+[instance-parameter]
+recipe = slapos.cookbook:slapconfiguration
+computer = ${slap-connection:computer-id}
+partition = ${slap-connection:partition-id}
+url = ${slap-connection:server-url}
+key = ${slap-connection:key-file}
+cert = ${slap-connection:cert-file}
+configuration.ipv4 = 0.0.0.0
+configuration.port = 4840
+configuration.camera = 0
+configuration.headless = 1
+configuration.mode = 0
+configuration.frame_width = 320
+configuration.frame_height = 200
+configuration.sensor = OpticalShapeInspectionSensor
+configuration.video_stream_port = 8485
+configuration.stable_frames = 1
+
+[oi-sensor-service]
+recipe = slapos.cookbook:wrapper
+command-line = {{ interpreter_location }}/py {{ osie_repository_location }}/oi-sensor/oi-sensor.py --ipv4 ${instance-parameter:configuration.ipv4} --port ${instance-parameter:configuration.port} --headless ${instance-parameter:configuration.headless} --camera ${instance-parameter:configuration.camera} --mode ${instance-parameter:configuration.mode} --frame_width ${instance-parameter:configuration.frame_width} --frame_height ${instance-parameter:configuration.frame_height} --sensor ${instance-parameter:configuration.sensor} --video_stream_port ${instance-parameter:configuration.video_stream_port} --stable_frames ${instance-parameter:configuration.stable_frames}
+
+wrapper-path = ${directory:service}/oi-sensor-service
+output = $${:wrapper-path}
+
+[oi-sensor-service-listen-promise-ipv4]
+<= check-port-listening-promise
+hostname = localhost
+port = 4840
+
+[promises]
+recipe =
+instance-promises =
+  ${oi-sensor-service-listen-promise-ipv4:path}
